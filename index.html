@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中原大學面試經驗查詢系統</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <style>
+        :root { --primary: #003a6c; --accent: #00a896; --bg: #f0f4f8; }
+        body { font-family: "PingFang TC", "Microsoft JhengHei", sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #333; }
+        .container { max-width: 800px; margin: 20px auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+        h1 { text-align: center; color: var(--primary); margin-bottom: 25px; font-size: 1.5rem; }
+        
+        /* 修正跑版：改用 flex-wrap 並限制寬度 */
+        .filter-grid { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 25px; }
+        .select-group { flex: 1 1 calc(50% - 15px); min-width: 280px; display: flex; flex-direction: column; }
+        label { margin-bottom: 6px; font-weight: bold; color: #555; font-size: 0.9em; }
+        
+        select { 
+            padding: 12px; border-radius: 10px; border: 2px solid #ddd; 
+            font-size: 15px; background: white; cursor: pointer; transition: 0.3s;
+            width: 100%; box-sizing: border-box; text-overflow: ellipsis;
+        }
+        select:focus { border-color: var(--primary); outline: none; }
+
+        /* 非官方標籤樣式 */
+        .unofficial-badge {
+            font-size: 0.4em;
+            color: #d9534f;
+            border: 1px solid #d9534f;
+            padding: 1px 4px;
+            border-radius: 3px;
+            font-weight: normal;
+            white-space: nowrap; /* 關鍵：強制標籤內容不換行 */
+            flex-shrink: 0; /* 防止標籤被擠壓變形 */
+        }
+        /* 讓標題與標籤保持在同一行 */
+        h1 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: nowrap; /* 強制不換行 */
+            gap: 8px; /* 標題與標籤的間距 */
+            word-break: keep-all;
+        }
+
+        /* 針對小螢幕手機的微調 */
+        @media (max-width: 400px) {
+            h1 {
+                font-size: 1.3rem; /* 手機版標題稍微縮小，避免擠壓 */
+            }
+        }
+
+        /* 精簡版表單連結區塊 */
+        .share-banner {
+            background-color: #fff9f0;
+            border: 1px dashed #ffb74d;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .share-banner p {
+            margin: 0;
+            font-size: 0.9em;
+            color: #856404;
+        }
+
+        .share-btn {
+            background-color: #ffb74d;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.85em;
+            transition: 0.3s;
+        }
+
+        .share-btn:hover {
+            background-color: #ffa726;
+        }
+
+        /* 防止選單撐開跑版 */
+        select {
+            width: 100%;
+            box-sizing: border-box;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* 結果區塊樣式 */
+        .result-card { display: none; margin-top: 20px; padding: 20px; border-radius: 12px; background: #fff; border-top: 5px solid var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; background: #f8fafc; padding: 15px; border-radius: 10px; }
+        .info-item { font-size: 0.95em; color: #444; }
+        .info-label { font-weight: bold; color: var(--primary); margin-right: 5px; }
+        
+        .item-box { margin-bottom: 15px; }
+        .item-title { font-weight: bold; color: var(--primary); margin-bottom: 8px; display: flex; align-items: center; }
+        .item-title::before { content: "◆"; margin-right: 8px; color: var(--accent); }
+        .item-content { white-space: pre-wrap; background: #f9f9f9; padding: 15px; border-radius: 8px; line-height: 1.6; border: 1px solid #eee; font-size: 0.95em; }
+        
+        @media (max-width: 600px) { .select-group { flex: 1 1 100%; } .info-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>
+        <span>🎓 中原大學面試經驗查詢</span>
+        <span class="unofficial-badge">非官方</span>
+    </h1>
+    
+    <div class="filter-grid">
+        <div class="select-group"><label>1. 選擇學院</label><select id="sel-college" disabled><option>載入中...</option></select></div>
+        <div class="select-group"><label>2. 選擇系所</label><select id="sel-dept" disabled><option>請先選擇學院</option></select></div>
+        <div class="select-group"><label>3. 招生管道</label><select id="sel-path" disabled><option>請先選擇系所</option></select></div>
+        <div class="select-group"><label>4. 學年度</label><select id="sel-year" disabled><option>請先選擇管道</option></select></div>
+    </div>
+
+    <div id="result" class="result-card">
+        <div class="info-grid">
+            <div class="info-item"><span class="info-label">面試形式：</span><span id="res-type"></span></div>
+            <div class="info-item"><span class="info-label">考生人數：</span><span id="res-stus"></span></div>
+            <div class="info-item"><span class="info-label">考官人數：</span><span id="res-profs"></span></div>
+            <div class="info-item"><span class="info-label">考場佈置：</span><span id="res-layout"></span></div>
+        </div>
+
+        <div class="item-box">
+            <div class="item-title">面試流程與題目</div>
+            <div id="res-combined" class="item-content"></div>
+        </div>
+        <div class="item-box">
+            <div class="item-title">給學弟妹的建議</div>
+            <div id="res-advice" class="item-content"></div>
+        </div>
+    </div>
+
+    <div class="share-banner">
+        <p>📢 歡迎分享你的面試經驗，幫助更多學弟妹！</p>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSc2X4-W8Th6FwGBGORvgb7VbovD5sQn1JgkhaJvJfGl0dlG4A/viewform?usp=header" target="_blank" class="share-btn">我要分享</a>
+    </div>
+</div>
+
+<script>
+const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTikTWQ1NHtmCIoslCCUnqJ_b-UOvFNnF2jkTFRYLthASVeGCZJOZDD5d9gZoy4X3zeQLhb-yHF2CRB/pub?output=csv';
+
+let structure = {};
+
+Papa.parse(csvUrl, {
+    download: true, header: true, skipEmptyLines: true,
+    complete: function(results) {
+        buildStructure(results.data);
+        initDropdowns();
+    }
+});
+
+function buildStructure(data) {
+    structure = {};
+    data.forEach(row => {
+        const colFull = row['面試學院']?.trim();
+        if (!colFull) return;
+
+        const pureCol = colFull.split('（')[0].trim();
+        let deptKey = Object.keys(row).find(k => k.includes(pureCol) && k !== '面試學院');
+        let dept = row[deptKey]?.trim();
+
+        const path = row['面試管道']?.trim() || "一般招生";
+        const yr = row['面試學年度']?.trim() || "114";
+
+        if (dept) {
+            if (!structure[colFull]) structure[colFull] = {};
+            if (!structure[colFull][dept]) structure[colFull][dept] = {};
+            if (!structure[colFull][dept][path]) structure[colFull][dept][path] = {};
+            structure[colFull][dept][path][yr] = row;
+        }
+    });
+}
+
+function initDropdowns() {
+    const s1 = document.getElementById('sel-college');
+    const s2 = document.getElementById('sel-dept');
+    const s3 = document.getElementById('sel-path');
+    const s4 = document.getElementById('sel-year');
+
+    const colleges = Object.keys(structure).sort();
+    s1.innerHTML = '<option value="">-- 選擇學院 --</option>';
+    colleges.forEach(c => s1.add(new Option(c, c)));
+    s1.disabled = false;
+
+    s1.onchange = () => { resetSelect(['sel-dept', 'sel-path', 'sel-year']); updateSelect(s2, structure[s1.value]); };
+    s2.onchange = () => { resetSelect(['sel-path', 'sel-year']); updateSelect(s3, structure[s1.value][s2.value]); };
+    s3.onchange = () => { resetSelect(['sel-year']); updateSelect(s4, structure[s1.value][s2.value][s3.value]); };
+    s4.onchange = showResult;
+}
+
+function updateSelect(el, dataSet) {
+    el.innerHTML = '<option value="">-- 請選擇 --</option>';
+    if (dataSet) { Object.keys(dataSet).sort().forEach(k => el.add(new Option(k, k))); el.disabled = false; }
+}
+
+function resetSelect(ids) {
+    ids.forEach(id => { const el = document.getElementById(id); el.innerHTML = '<option value="">請先選擇上一項</option>'; el.disabled = true; });
+    document.getElementById('result').style.display = 'none';
+}
+
+function showResult() {
+    const info = structure[document.getElementById('sel-college').value]
+                          [document.getElementById('sel-dept').value]
+                          [document.getElementById('sel-path').value]
+                          [document.getElementById('sel-year').value];
+
+    // 對應試算表欄位名稱
+    document.getElementById('res-type').innerText = info['個人、團體？'] || '無資料';
+    document.getElementById('res-stus').innerText = (info['一場面試幾個考生？'] || '0') + ' 人';
+    document.getElementById('res-profs').innerText = (info['一場面試有幾個教授？'] || '0') + ' 位';
+    document.getElementById('res-layout').innerText = info['考場長怎樣呢？'] || '無資料';
+
+    // 合併流程與題目
+    const combinedText = info['面試問題及流程'] || '無資料';
+    document.getElementById('res-combined').innerText = combinedText;
+
+    // 建議
+    const adviceKey = Object.keys(info).find(k => k.includes('建議'));
+    document.getElementById('res-advice').innerText = info[adviceKey] || '無資料';
+
+    document.getElementById('result').style.display = 'block';
+}
+</script>
+</body>
+</html>
