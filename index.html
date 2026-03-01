@@ -53,6 +53,7 @@
         <span>🎓 中原大學面試經驗查詢</span>
         <span class="unofficial-badge">非官方</span>
     </h1>
+    
     <div class="filter-grid">
         <div class="select-group"><label>1. 選擇學院</label><select id="sel-college" disabled><option>載入中...</option></select></div>
         <div class="select-group"><label>2. 選擇系所</label><select id="sel-dept" disabled><option>請先選擇學院</option></select></div>
@@ -61,18 +62,23 @@
     </div>
 
     <div id="result" class="result-card">
+        <div class="pagination" id="pag-area" style="display: none;">
+            <button class="nav-btn" id="btn-prev" onclick="changePage(-1)">← 上一筆</button>
+            <span class="pagination-info" id="pag-text">第 1 / 1 筆</span>
+            <button class="nav-btn" id="btn-next" onclick="changePage(1)">下一筆 →</button>
+        </div>
+
         <div class="info-grid">
             <div class="info-item"><span class="info-label">面試形式：</span><span id="res-type"></span></div>
             <div class="info-item"><span class="info-label">考生人數：</span><span id="res-stus"></span></div>
             <div class="info-item"><span class="info-label">考官人數：</span><span id="res-profs"></span></div>
             <div class="info-item"><span class="info-label">考場佈置：</span><span id="res-layout"></span></div>
         </div>
-        
+
         <div class="item-box">
             <div class="item-title">面試流程與題目</div>
             <div id="res-combined" class="item-content"></div>
         </div>
-
         <div class="item-box">
             <div class="item-title">給學弟妹的建議</div>
             <div id="res-advice" class="item-content"></div>
@@ -203,5 +209,6 @@ function changePage(step) {
 </script>
 </body>
 </html>
+
 
 
