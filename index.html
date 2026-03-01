@@ -169,26 +169,33 @@ function renderData() {
     const info = currentDataList[currentIndex];
     if (!info) return;
 
-    // 更新內容
+    // 1. 更新內容文字
     document.getElementById('res-type').innerText = info['個人、團體？'] || '無資料';
     document.getElementById('res-stus').innerText = (info['一場面試幾個考生？'] || '0') + ' 人';
     document.getElementById('res-profs').innerText = (info['一場面試有幾個教授？'] || '0') + ' 位';
     document.getElementById('res-layout').innerText = info['考場長怎樣呢？'] || '無資料';
     document.getElementById('res-combined').innerText = info['面試問題及流程'] || '無資料';
+    
     const adviceKey = Object.keys(info).find(k => k.includes('建議'));
     document.getElementById('res-advice').innerText = info[adviceKey] || '無資料';
 
-    // 分頁邏輯
+    // 2. 分頁控制邏輯 (修改處：即使只有一筆也顯示)
     const pagArea = document.getElementById('pag-area');
-    if (currentDataList.length > 1) {
-        pagArea.style.display = 'flex';
-        document.getElementById('pag-text').innerText = `目前資料：第 ${currentIndex + 1} / ${currentDataList.length} 筆`;
-        document.getElementById('btn-prev').disabled = (currentIndex === 0);
-        document.getElementById('btn-next').disabled = (currentIndex === currentDataList.length - 1);
-    } else {
-        pagArea.style.display = 'none';
-    }
+    
+    // 強制顯示分頁區域
+    pagArea.style.display = 'flex'; 
+    
+    // 更新顯示文字：例如 "目前資料：第 1 / 1 筆" 或 "目前資料：第 1 / 6 筆"
+    document.getElementById('pag-text').innerText = `目前資料：第 ${currentIndex + 1} / ${currentDataList.length} 筆`;
 
+    // 3. 按鈕防呆邏輯
+    // 如果在第一筆，禁用「上一筆」
+    document.getElementById('btn-prev').disabled = (currentIndex === 0);
+    
+    // 如果在最後一筆（包含只有一筆的情況），禁用「下一筆」
+    document.getElementById('btn-next').disabled = (currentIndex === currentDataList.length - 1);
+
+    // 顯示結果卡片
     document.getElementById('result').style.display = 'block';
 }
 
@@ -202,3 +209,4 @@ function changePage(step) {
 </script>
 </body>
 </html>
+
