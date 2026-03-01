@@ -9,101 +9,41 @@
         :root { --primary: #003a6c; --accent: #00a896; --bg: #f0f4f8; }
         body { font-family: "PingFang TC", "Microsoft JhengHei", sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #333; }
         .container { max-width: 800px; margin: 20px auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
-        h1 { text-align: center; color: var(--primary); margin-bottom: 25px; font-size: 1.5rem; }
         
-        /* 修正跑版：改用 flex-wrap 並限制寬度 */
+        h1 { display: flex; align-items: center; justify-content: center; flex-wrap: nowrap; gap: 8px; color: var(--primary); margin-bottom: 25px; font-size: 1.5rem; word-break: keep-all; }
+        .unofficial-badge { font-size: 0.4em; color: #d9534f; border: 1px solid #d9534f; padding: 1px 4px; border-radius: 3px; font-weight: normal; white-space: nowrap; flex-shrink: 0; }
+
+        .share-banner { background-color: #fff9f0; border: 1px dashed #ffb74d; padding: 12px; border-radius: 10px; margin-bottom: 25px; display: flex; align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        .share-banner p { margin: 0; font-size: 0.9em; color: #856404; font-weight: bold; }
+        .share-btn { background-color: #ffb74d; color: white; padding: 6px 15px; border-radius: 6px; text-decoration: none; font-size: 0.85em; transition: 0.3s; font-weight: bold; }
+
         .filter-grid { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 25px; }
         .select-group { flex: 1 1 calc(50% - 15px); min-width: 280px; display: flex; flex-direction: column; }
         label { margin-bottom: 6px; font-weight: bold; color: #555; font-size: 0.9em; }
-        
-        select { 
-            padding: 12px; border-radius: 10px; border: 2px solid #ddd; 
-            font-size: 15px; background: white; cursor: pointer; transition: 0.3s;
-            width: 100%; box-sizing: border-box; text-overflow: ellipsis;
-        }
-        select:focus { border-color: var(--primary); outline: none; }
+        select { padding: 12px; border-radius: 10px; border: 2px solid #ddd; font-size: 15px; background: white; width: 100%; box-sizing: border-box; text-overflow: ellipsis; white-space: nowrap; }
 
-        /* 非官方標籤樣式 */
-        .unofficial-badge {
-            font-size: 0.4em;
-            color: #d9534f;
-            border: 1px solid #d9534f;
-            padding: 1px 4px;
-            border-radius: 3px;
-            font-weight: normal;
-            white-space: nowrap; /* 關鍵：強制標籤內容不換行 */
-            flex-shrink: 0; /* 防止標籤被擠壓變形 */
-        }
-        /* 讓標題與標籤保持在同一行 */
-        h1 {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: nowrap; /* 強制不換行 */
-            gap: 8px; /* 標題與標籤的間距 */
-            word-break: keep-all;
-        }
+        /* 分頁控制區 */
+        .pagination { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 10px; background: #eef2f7; border-radius: 8px; }
+        .pagination-info { font-weight: bold; color: var(--primary); font-size: 0.95rem; }
+        .nav-btn { background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-size: 0.85rem; }
+        .nav-btn:disabled { background: #ccc; cursor: not-allowed; }
 
-        /* 針對小螢幕手機的微調 */
-        @media (max-width: 400px) {
-            h1 {
-                font-size: 1.3rem; /* 手機版標題稍微縮小，避免擠壓 */
-            }
-        }
-
-        /* 精簡版表單連結區塊 */
-        .share-banner {
-            background-color: #fff9f0;
-            border: 1px dashed #ffb74d;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .share-banner p {
-            margin: 0;
-            font-size: 0.9em;
-            color: #856404;
-        }
-
-        .share-btn {
-            background-color: #ffb74d;
-            color: white;
-            padding: 5px 12px;
-            border-radius: 4px;
-            text-decoration: none;
-            font-size: 0.85em;
-            transition: 0.3s;
-        }
-
-        .share-btn:hover {
-            background-color: #ffa726;
-        }
-
-        /* 防止選單撐開跑版 */
-        select {
-            width: 100%;
-            box-sizing: border-box;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        /* 結果區塊樣式 */
         .result-card { display: none; margin-top: 20px; padding: 20px; border-radius: 12px; background: #fff; border-top: 5px solid var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; background: #f8fafc; padding: 15px; border-radius: 10px; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #edf2f7; }
         .info-item { font-size: 0.95em; color: #444; }
         .info-label { font-weight: bold; color: var(--primary); margin-right: 5px; }
         
         .item-box { margin-bottom: 15px; }
         .item-title { font-weight: bold; color: var(--primary); margin-bottom: 8px; display: flex; align-items: center; }
         .item-title::before { content: "◆"; margin-right: 8px; color: var(--accent); }
-        .item-content { white-space: pre-wrap; background: #f9f9f9; padding: 15px; border-radius: 8px; line-height: 1.6; border: 1px solid #eee; font-size: 0.95em; }
+        .item-content { white-space: pre-wrap; background: #f9f9f9; padding: 15px; border-radius: 8px; line-height: 1.7; border: 1px solid #eee; font-size: 0.95em; color: #444; }
         
-        @media (max-width: 600px) { .select-group { flex: 1 1 100%; } .info-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 600px) { 
+            h1 { font-size: 1.3rem; }
+            .select-group { flex: 1 1 100%; min-width: 100%; } 
+            .info-grid { grid-template-columns: 1fr; }
+            .share-banner { flex-direction: column; text-align: center; }
+        }
     </style>
 </head>
 <body>
@@ -113,6 +53,11 @@
         <span>🎓 中原大學面試經驗查詢</span>
         <span class="unofficial-badge">非官方</span>
     </h1>
+
+    <div class="share-banner">
+        <p>📢 歡迎分享你的面試經驗，幫助更多學弟妹！</p>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSc2X4-W8Th6FwGBGORvgb7VbovD5sQn1JgkhaJvJfGl0dlG4A/viewform?usp=header" target="_blank" class="share-btn">我要分享</a>
+    </div>
     
     <div class="filter-grid">
         <div class="select-group"><label>1. 選擇學院</label><select id="sel-college" disabled><option>載入中...</option></select></div>
@@ -122,6 +67,12 @@
     </div>
 
     <div id="result" class="result-card">
+        <div class="pagination" id="pag-area" style="display: none;">
+            <button class="nav-btn" id="btn-prev" onclick="changePage(-1)">← 上一筆</button>
+            <span class="pagination-info" id="pag-text">第 1 / 1 筆</span>
+            <button class="nav-btn" id="btn-next" onclick="changePage(1)">下一筆 →</button>
+        </div>
+
         <div class="info-grid">
             <div class="info-item"><span class="info-label">面試形式：</span><span id="res-type"></span></div>
             <div class="info-item"><span class="info-label">考生人數：</span><span id="res-stus"></span></div>
@@ -138,17 +89,14 @@
             <div id="res-advice" class="item-content"></div>
         </div>
     </div>
-
-    <div class="share-banner">
-        <p>📢 歡迎分享你的面試經驗，幫助更多學弟妹！</p>
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSc2X4-W8Th6FwGBGORvgb7VbovD5sQn1JgkhaJvJfGl0dlG4A/viewform?usp=header" target="_blank" class="share-btn">我要分享</a>
-    </div>
 </div>
 
 <script>
 const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTikTWQ1NHtmCIoslCCUnqJ_b-UOvFNnF2jkTFRYLthASVeGCZJOZDD5d9gZoy4X3zeQLhb-yHF2CRB/pub?output=csv';
 
 let structure = {};
+let currentDataList = []; // 當前符合條件的所有筆數
+let currentIndex = 0;      // 當前顯示第幾筆
 
 Papa.parse(csvUrl, {
     download: true, header: true, skipEmptyLines: true,
@@ -175,26 +123,23 @@ function buildStructure(data) {
             if (!structure[colFull]) structure[colFull] = {};
             if (!structure[colFull][dept]) structure[colFull][dept] = {};
             if (!structure[colFull][dept][path]) structure[colFull][dept][path] = {};
-            structure[colFull][dept][path][yr] = row;
+            // 修改點：改成陣列存儲多筆
+            if (!structure[colFull][dept][path][yr]) structure[colFull][dept][path][yr] = [];
+            structure[colFull][dept][path][yr].push(row);
         }
     });
 }
 
 function initDropdowns() {
-    const s1 = document.getElementById('sel-college');
-    const s2 = document.getElementById('sel-dept');
-    const s3 = document.getElementById('sel-path');
-    const s4 = document.getElementById('sel-year');
-
+    const s1 = document.getElementById('sel-college'), s2 = document.getElementById('sel-dept'), s3 = document.getElementById('sel-path'), s4 = document.getElementById('sel-year');
     const colleges = Object.keys(structure).sort();
     s1.innerHTML = '<option value="">-- 選擇學院 --</option>';
     colleges.forEach(c => s1.add(new Option(c, c)));
     s1.disabled = false;
-
     s1.onchange = () => { resetSelect(['sel-dept', 'sel-path', 'sel-year']); updateSelect(s2, structure[s1.value]); };
     s2.onchange = () => { resetSelect(['sel-path', 'sel-year']); updateSelect(s3, structure[s1.value][s2.value]); };
     s3.onchange = () => { resetSelect(['sel-year']); updateSelect(s4, structure[s1.value][s2.value][s3.value]); };
-    s4.onchange = showResult;
+    s4.onchange = startShowResult;
 }
 
 function updateSelect(el, dataSet) {
@@ -207,27 +152,52 @@ function resetSelect(ids) {
     document.getElementById('result').style.display = 'none';
 }
 
-function showResult() {
-    const info = structure[document.getElementById('sel-college').value]
-                          [document.getElementById('sel-dept').value]
-                          [document.getElementById('sel-path').value]
-                          [document.getElementById('sel-year').value];
+// 初始化結果顯示
+function startShowResult() {
+    const college = document.getElementById('sel-college').value;
+    const dept = document.getElementById('sel-dept').value;
+    const path = document.getElementById('sel-path').value;
+    const year = document.getElementById('sel-year').value;
+    
+    currentDataList = structure[college][dept][path][year];
+    currentIndex = 0;
+    renderData();
+}
 
-    // 對應試算表欄位名稱
+// 渲染特定索引的資料
+function renderData() {
+    const info = currentDataList[currentIndex];
+    if (!info) return;
+
+    // 更新內容
     document.getElementById('res-type').innerText = info['個人、團體？'] || '無資料';
     document.getElementById('res-stus').innerText = (info['一場面試幾個考生？'] || '0') + ' 人';
     document.getElementById('res-profs').innerText = (info['一場面試有幾個教授？'] || '0') + ' 位';
     document.getElementById('res-layout').innerText = info['考場長怎樣呢？'] || '無資料';
-
-    // 合併流程與題目
-    const combinedText = info['面試問題及流程'] || '無資料';
-    document.getElementById('res-combined').innerText = combinedText;
-
-    // 建議
+    document.getElementById('res-combined').innerText = info['面試問題及流程'] || '無資料';
     const adviceKey = Object.keys(info).find(k => k.includes('建議'));
     document.getElementById('res-advice').innerText = info[adviceKey] || '無資料';
 
+    // 分頁邏輯
+    const pagArea = document.getElementById('pag-area');
+    if (currentDataList.length > 1) {
+        pagArea.style.display = 'flex';
+        document.getElementById('pag-text').innerText = `目前資料：第 ${currentIndex + 1} / ${currentDataList.length} 筆`;
+        document.getElementById('btn-prev').disabled = (currentIndex === 0);
+        document.getElementById('btn-next').disabled = (currentIndex === currentDataList.length - 1);
+    } else {
+        pagArea.style.display = 'none';
+    }
+
     document.getElementById('result').style.display = 'block';
+}
+
+// 切換頁面函式
+function changePage(step) {
+    currentIndex += step;
+    renderData();
+    // 切換時自動滾動回頂部，體驗較好
+    document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 </script>
 </body>
