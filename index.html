@@ -176,7 +176,7 @@ function renderData() {
     document.getElementById('res-layout').innerText = info['考場長怎樣呢？'] || '無資料';
     document.getElementById('res-combined').innerText = info['面試問題及流程'] || '無資料';
     
-    const adviceKey = Object.keys(info).find(k => k.includes('建議'));
+    const adviceKey = Object.keys(info).find(k => k.includes('有沒有什麼想告訴學弟妹的～'));
     document.getElementById('res-advice').innerText = info[adviceKey] || '無資料';
 
     // 2. 分頁控制邏輯 (修改處：即使只有一筆也顯示)
@@ -209,6 +209,7 @@ function changePage(step) {
 </script>
 </body>
 </html>
+
 
 
 
