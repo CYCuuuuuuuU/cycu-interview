@@ -46,8 +46,8 @@
         }
     </style>
 </head>
+    
 <body>
-
 <div class="container">
     <h1>
         <span>🎓 中原大學面試經驗查詢</span>
@@ -86,7 +86,7 @@
     </div>
 
     <div class="share-banner">
-        <p>📢 歡迎分享你的面試經驗，幫助更多學弟妹！</p>
+        <p>歡迎分享你的面試經驗，幫助更多學弟妹！</p>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSc2X4-W8Th6FwGBGORvgb7VbovD5sQn1JgkhaJvJfGl0dlG4A/viewform?usp=header" target="_blank" class="share-btn">我要分享</a>
     </div>
 </div>
@@ -168,8 +168,6 @@ function startShowResult() {
 function renderData() {
     const info = currentDataList[currentIndex];
     if (!info) return;
-
-    // 1. 更新內容文字
     document.getElementById('res-type').innerText = info['個人、團體？'] || '無資料';
     document.getElementById('res-stus').innerText = (info['一場面試幾個考生？'] || '0') + ' 人';
     document.getElementById('res-profs').innerText = (info['一場面試有幾個教授？'] || '0') + ' 位';
@@ -179,16 +177,16 @@ function renderData() {
     const adviceKey = Object.keys(info).find(k => k.includes('有沒有什麼想告訴學弟妹的～'));
     document.getElementById('res-advice').innerText = info[adviceKey] || '無資料';
 
-    // 2. 分頁控制邏輯 (修改處：即使只有一筆也顯示)
+    // 分頁控制邏輯 (即使只有一筆也顯示)
     const pagArea = document.getElementById('pag-area');
     
     // 強制顯示分頁區域
     pagArea.style.display = 'flex'; 
     
-    // 更新顯示文字：例如 "目前資料：第 1 / 1 筆" 或 "目前資料：第 1 / 6 筆"
+    // 顯示文字：例如 "目前資料：第 1 / 1 筆" 或 "目前資料：第 1 / 6 筆"
     document.getElementById('pag-text').innerText = `目前資料：第 ${currentIndex + 1} / ${currentDataList.length} 筆`;
 
-    // 3. 按鈕防呆邏輯
+    // 按鈕防呆邏輯
     // 如果在第一筆，禁用「上一筆」
     document.getElementById('btn-prev').disabled = (currentIndex === 0);
     
@@ -209,7 +207,3 @@ function changePage(step) {
 </script>
 </body>
 </html>
-
-
-
-
