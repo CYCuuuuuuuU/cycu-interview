@@ -282,6 +282,7 @@ function initDropdowns() {
     const opt1 = document.getElementById('options-college');
 
     text1.innerText = '-- 選擇學院 --';
+    text1.removeAttribute('title');
     box1.classList.remove('disabled');
 
     opt1.innerHTML = '';
@@ -289,6 +290,7 @@ function initDropdowns() {
         const item = document.createElement('div');
         item.className = 'dropdown-option-item';
         item.innerText = c;
+        item.title = c; // 滑鼠懸停顯示完整名稱（解決省略號看不到的問題）
         item.onclick = () => selectOption('college', c);
         opt1.appendChild(item);
     });
@@ -301,7 +303,6 @@ function toggleDropdown(type) {
     const optionsEl = document.getElementById(`options-${type}`);
     const isOpen = optionsEl.classList.contains('show');
 
-    // 點擊時隱藏其他選單
     document.querySelectorAll('.dropdown-options').forEach(el => el.classList.remove('show'));
 
     if (!isOpen) {
@@ -311,7 +312,9 @@ function toggleDropdown(type) {
 
 function selectOption(type, value) {
     selectedValues[type] = value;
-    document.getElementById(`text-${type}`).innerText = value;
+    const textEl = document.getElementById(`text-${type}`);
+    textEl.innerText = value;
+    textEl.title = value; // 讓已選取的外框加上完整名稱提示
     document.getElementById(`options-${type}`).classList.remove('show');
 
     if (type === 'college') {
@@ -334,6 +337,7 @@ function updateSelect(type, dataSet) {
     const optArea = document.getElementById(`options-${type}`);
 
     text.innerText = '-- 請選擇 --';
+    text.removeAttribute('title');
     optArea.innerHTML = '';
 
     if (dataSet) {
@@ -341,6 +345,7 @@ function updateSelect(type, dataSet) {
             const item = document.createElement('div');
             item.className = 'dropdown-option-item';
             item.innerText = k;
+            item.title = k; // 懸停顯示完整名稱
             item.onclick = () => selectOption(type, k);
             optArea.appendChild(item);
         });
@@ -356,13 +361,13 @@ function resetSelect(types) {
         const optArea = document.getElementById(`options-${t}`);
 
         text.innerText = '請先選擇上一項';
+        text.removeAttribute('title');
         optArea.innerHTML = '';
         box.classList.add('disabled');
     });
     document.getElementById('result').style.display = 'none';
 }
 
-// 點擊空白處關閉所有選單
 window.addEventListener('click', (e) => {
     if (!e.target.closest('.custom-select-wrapper')) {
         document.querySelectorAll('.dropdown-options').forEach(el => el.classList.remove('show'));
