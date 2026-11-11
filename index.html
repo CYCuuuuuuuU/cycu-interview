@@ -20,7 +20,94 @@
         .filter-grid { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 25px; }
         .select-group { flex: 1 1 calc(50% - 15px); min-width: 280px; display: flex; flex-direction: column; }
         label { margin-bottom: 6px; font-weight: bold; color: #555; font-size: 0.9em; }
-        select { padding: 12px; border-radius: 10px; border: 2px solid #ddd; font-size: 15px; background: white; width: 100%; box-sizing: border-box; text-overflow: ellipsis; white-space: nowrap; }
+
+        /* ====== 自訂下拉選單樣式 (Custom Dropdown) ====== */
+        .custom-select-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .select-box {
+            padding: 12px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            font-size: 15px;
+            background: white;
+            width: 100%;
+            box-sizing: border-box;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            transition: border-color 0.2s;
+        }
+
+        .select-box.disabled {
+            background-color: #f5f5f5;
+            color: #aaa;
+            cursor: not-allowed;
+            border-color: #eee;
+        }
+
+        .select-box:not(.disabled):hover {
+            border-color: var(--primary);
+        }
+
+        .selected-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-right: 10px;
+        }
+
+        .arrow {
+            font-size: 0.7em;
+            color: #888;
+            transition: transform 0.2s;
+        }
+
+        .dropdown-options {
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0;
+            width: 100%;
+            max-height: 250px;
+            overflow-y: auto;
+            background: white;
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            z-index: 1000;
+            display: none;
+            box-sizing: border-box;
+        }
+
+        .dropdown-options.show {
+            display: block;
+        }
+
+        .dropdown-option-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-align: left;
+        }
+
+        .dropdown-option-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-option-item:hover {
+            background-color: #f0f4f8;
+            color: var(--primary);
+        }
+        /* ============================================== */
 
         /* 分頁控制區 */
         .pagination { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 10px; background: #eef2f7; border-radius: 8px; }
@@ -70,10 +157,49 @@
     </h1>
     
     <div class="filter-grid">
-        <div class="select-group"><label>1. 選擇學院</label><select id="sel-college" disabled><option>載入中...</option></select></div>
-        <div class="select-group"><label>2. 選擇系所</label><select id="sel-dept" disabled><option>請先選擇學院</option></select></div>
-        <div class="select-group"><label>3. 招生管道</label><select id="sel-path" disabled><option>請先選擇系所</option></select></div>
-        <div class="select-group"><label>4. 學年度</label><select id="sel-year" disabled><option>請先選擇管道</option></select></div>
+        <div class="select-group">
+            <label>1. 選擇學院</label>
+            <div class="custom-select-wrapper">
+                <div class="select-box disabled" id="box-college" onclick="toggleDropdown('college')">
+                    <span class="selected-text" id="text-college">載入中...</span>
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="dropdown-options" id="options-college"></div>
+            </div>
+        </div>
+
+        <div class="select-group">
+            <label>2. 選擇系所</label>
+            <div class="custom-select-wrapper">
+                <div class="select-box disabled" id="box-dept" onclick="toggleDropdown('dept')">
+                    <span class="selected-text" id="text-dept">請先選擇學院</span>
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="dropdown-options" id="options-dept"></div>
+            </div>
+        </div>
+
+        <div class="select-group">
+            <label>3. 招生管道</label>
+            <div class="custom-select-wrapper">
+                <div class="select-box disabled" id="box-path" onclick="toggleDropdown('path')">
+                    <span class="selected-text" id="text-path">請先選擇系所</span>
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="dropdown-options" id="options-path"></div>
+            </div>
+        </div>
+
+        <div class="select-group">
+            <label>4. 學年度</label>
+            <div class="custom-select-wrapper">
+                <div class="select-box disabled" id="box-year" onclick="toggleDropdown('year')">
+                    <span class="selected-text" id="text-year">請先選擇管道</span>
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="dropdown-options" id="options-year"></div>
+            </div>
+        </div>
     </div>
 
     <div id="result" class="result-card">
@@ -110,6 +236,173 @@
     </footer>
 </div>
 
-<script src="script.js"></script>
+<script>
+const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTikTWQ1NHtmCIoslCCUnqJ_b-UOvFNnF2jkTFRYLthASVeGCZJOZDD5d9gZoy4X3zeQLhb-yHF2CRB/pub?output=csv';
+
+let structure = {};
+let selectedValues = { college: '', dept: '', path: '', year: '' };
+let currentDataList = [];
+let currentIndex = 0;
+
+Papa.parse(csvUrl, {
+    download: true, header: true, skipEmptyLines: true,
+    complete: function(results) {
+        buildStructure(results.data);
+        initDropdowns();
+    }
+});
+
+function buildStructure(data) {
+    structure = {};
+    data.forEach(row => {
+        const colFull = row['面試學院']?.trim();
+        if (!colFull) return;
+
+        const pureCol = colFull.split('（')[0].trim();
+        let deptKey = Object.keys(row).find(k => k.includes(pureCol) && k !== '面試學院');
+        let dept = row[deptKey]?.trim();
+
+        const path = row['面試管道']?.trim() || "一般招生";
+        const yr = row['面試學年度']?.trim() || "114";
+
+        if (dept) {
+            if (!structure[colFull]) structure[colFull] = {};
+            if (!structure[colFull][dept]) structure[colFull][dept] = {};
+            if (!structure[colFull][dept][path]) structure[colFull][dept][path] = {};
+            if (!structure[colFull][dept][path][yr]) structure[colFull][dept][path][yr] = [];
+            structure[colFull][dept][path][yr].push(row);
+        }
+    });
+}
+
+function initDropdowns() {
+    const colleges = Object.keys(structure).sort();
+    const box1 = document.getElementById('box-college');
+    const text1 = document.getElementById('text-college');
+    const opt1 = document.getElementById('options-college');
+
+    text1.innerText = '-- 選擇學院 --';
+    box1.classList.remove('disabled');
+
+    opt1.innerHTML = '';
+    colleges.forEach(c => {
+        const item = document.createElement('div');
+        item.className = 'dropdown-option-item';
+        item.innerText = c;
+        item.onclick = () => selectOption('college', c);
+        opt1.appendChild(item);
+    });
+}
+
+function toggleDropdown(type) {
+    const box = document.getElementById(`box-${type}`);
+    if (box.classList.contains('disabled')) return;
+
+    const optionsEl = document.getElementById(`options-${type}`);
+    const isOpen = optionsEl.classList.contains('show');
+
+    // 點擊時隱藏其他選單
+    document.querySelectorAll('.dropdown-options').forEach(el => el.classList.remove('show'));
+
+    if (!isOpen) {
+        optionsEl.classList.add('show');
+    }
+}
+
+function selectOption(type, value) {
+    selectedValues[type] = value;
+    document.getElementById(`text-${type}`).innerText = value;
+    document.getElementById(`options-${type}`).classList.remove('show');
+
+    if (type === 'college') {
+        resetSelect(['dept', 'path', 'year']);
+        updateSelect('dept', structure[value]);
+    } else if (type === 'dept') {
+        resetSelect(['path', 'year']);
+        updateSelect('path', structure[selectedValues.college][value]);
+    } else if (type === 'path') {
+        resetSelect(['year']);
+        updateSelect('year', structure[selectedValues.college][selectedValues.dept][value]);
+    } else if (type === 'year') {
+        startShowResult();
+    }
+}
+
+function updateSelect(type, dataSet) {
+    const box = document.getElementById(`box-${type}`);
+    const text = document.getElementById(`text-${type}`);
+    const optArea = document.getElementById(`options-${type}`);
+
+    text.innerText = '-- 請選擇 --';
+    optArea.innerHTML = '';
+
+    if (dataSet) {
+        Object.keys(dataSet).sort().forEach(k => {
+            const item = document.createElement('div');
+            item.className = 'dropdown-option-item';
+            item.innerText = k;
+            item.onclick = () => selectOption(type, k);
+            optArea.appendChild(item);
+        });
+        box.classList.remove('disabled');
+    }
+}
+
+function resetSelect(types) {
+    types.forEach(t => {
+        selectedValues[t] = '';
+        const box = document.getElementById(`box-${t}`);
+        const text = document.getElementById(`text-${t}`);
+        const optArea = document.getElementById(`options-${t}`);
+
+        text.innerText = '請先選擇上一項';
+        optArea.innerHTML = '';
+        box.classList.add('disabled');
+    });
+    document.getElementById('result').style.display = 'none';
+}
+
+// 點擊空白處關閉所有選單
+window.addEventListener('click', (e) => {
+    if (!e.target.closest('.custom-select-wrapper')) {
+        document.querySelectorAll('.dropdown-options').forEach(el => el.classList.remove('show'));
+    }
+});
+
+function startShowResult() {
+    const { college, dept, path, year } = selectedValues;
+    currentDataList = structure[college][dept][path][year];
+    currentIndex = 0;
+    renderData();
+}
+
+function renderData() {
+    const info = currentDataList[currentIndex];
+    if (!info) return;
+    document.getElementById('res-type').innerText = info['個人、團體？'] || '無資料';
+    document.getElementById('res-stus').innerText = (info['一場面試幾個考生？'] || '0') + ' 人';
+    document.getElementById('res-profs').innerText = (info['一場面試有幾個教授？'] || '0') + ' 位';
+    document.getElementById('res-layout').innerText = info['考場長怎樣呢？'] || '無資料';
+    document.getElementById('res-combined').innerText = info['面試問題及流程'] || '無資料';
+    
+    const adviceKey = Object.keys(info).find(k => k.includes('有沒有什麼想告訴學弟妹的～'));
+    document.getElementById('res-advice').innerText = info[adviceKey] || '無資料';
+
+    const pagArea = document.getElementById('pag-area');
+    pagArea.style.display = 'flex'; 
+    document.getElementById('pag-text').innerText = `目前資料：第 ${currentIndex + 1} / ${currentDataList.length} 筆`;
+
+    document.getElementById('btn-prev').disabled = (currentIndex === 0);
+    document.getElementById('btn-next').disabled = (currentIndex === currentDataList.length - 1);
+
+    document.getElementById('result').style.display = 'block';
+}
+
+function changePage(step) {
+    currentIndex += step;
+    renderData();
+    document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+</script>
 </body>
 </html>
