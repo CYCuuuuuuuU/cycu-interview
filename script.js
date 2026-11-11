@@ -22,8 +22,8 @@ function buildStructure(data) {
         let deptKey = Object.keys(row).find(k => k.includes(pureCol) && k !== '面試學院');
         let dept = row[deptKey]?.trim();
 
-        const path = row['面試管道']?.trim() || "一般招生";
-        const yr = row['面試學年度']?.trim() || "114";
+        const path = row['面試管道']?.trim();
+        const yr = row['面試學年度']?.trim();
 
         if (dept) {
             if (!structure[colFull]) structure[colFull] = {};
